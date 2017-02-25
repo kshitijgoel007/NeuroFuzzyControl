@@ -72,6 +72,7 @@ void ShowVector(std::string label, std::vector<double> &v)
 
 int main(int argc, char const *argv[])
 {
+  int epoch_count;
 	//Data import
     Parser p;
     p.file_name = "SN_YEARLY.txt";
@@ -81,9 +82,11 @@ int main(int argc, char const *argv[])
   // For gnuplot_i
     Gnuplot gp("lines");
 
-    //Neural Net construction
+    //Neural Net construction and Learning Params Inputs
     std::vector<int> topology_input;
     TopologyInput(topology_input);
+    std::cout << "Enter the number of Epochs: ";
+    std::cin >> epoch_count;
     //Topology Complete
 
     //Windowing Dataset Creation
@@ -96,54 +99,56 @@ int main(int argc, char const *argv[])
     int total_size = p.data_size - (topology_input.front() + topology_input.back());
     std::cout << total_size << " " << p.data_size - total_size << std::endl;
     double** window_data_set = new double*[total_size];
-    for (int i = 0; i < total_size; i++)
+
+    double meansqtemp;
+    double meansqperepoch[epoch_count];
+    for (int epoch = 0; epoch < epoch_count; epoch++)
     {
-      window_data_set[i] = new double[p.data_size - total_size];
-      for (int j = 0; j < p.data_size - total_size; j++) {
-      window_data_set[i][j] = p.sample_outputs_[i+j];
-      if(j < (p.data_size - total_size - topology_input.back()))
-        input_values.push_back(window_data_set[i][j]);
-      else
-        desired_values.push_back(window_data_set[i][j]);
+      meansqtemp = 0;
+      for (int i = 0; i < total_size; i++)
+      {
+        window_data_set[i] = new double[p.data_size - total_size];
+        for (int j = 0; j < p.data_size - total_size; j++) {
+        window_data_set[i][j] = p.sample_outputs_[i+j];
+        if(j < (p.data_size - total_size - topology_input.back()))
+          input_values.push_back(window_data_set[i][j]);
+        else
+          desired_values.push_back(window_data_set[i][j]);
+        }
+        //ShowVector("Input is : ", input_values);
+        n.ForwardPass(input_values);
+
+        n.GetResults(result_values);
+        //ShowVector("Output is : ", result_values);
+
+        //ShowVector("Desired is : ", desired_values);
+        n.BackPropogate(desired_values);
+        //std::cout << "Mean Square Error is : " << n.GetMeanSquareError() << std::endl;
+        //MSE << i + 1 + 312*epoch << " " << n.GetMeanSquareError() << std::endl;
+        meansqtemp += n.GetMeanSquareError();
+        input_values.clear();
+        desired_values.clear();
       }
-      //ShowVector("Input is : ", input_values);
-      n.ForwardPass(input_values);
-
-      n.GetResults(result_values);
-      //ShowVector("Output is : ", result_values);
-
-      //ShowVector("Desired is : ", desired_values);
-      n.BackPropogate(desired_values);
-
-      std::cout << "Mean Square Error is : " << n.GetMeanSquareError() << std::endl;
-      MSE << n.GetMeanSquareError() << " " << i + 1 << std::endl;
-      input_values.clear();
-      desired_values.clear();
+      meansqperepoch[epoch] = meansqtemp;
+      MSE << epoch+1 << " " << meansqperepoch[epoch] << std::endl;
     }
     MSE.close();
+
+//Plotting
+    // Get MSE from file
     std::vector<double> MSE_data, iter;
     std::ifstream MSE_in("MSE.txt");
     std::string line;
+
     while(std::getline(MSE_in, line))
     {
         std::istringstream iss(line);
         double a,b;
         if(!(iss >> a >> b)) { break;}
-        MSE_data.push_back(a);
-        iter.push_back(b);
+        MSE_data.push_back(b);
+        iter.push_back(a);
     }
-    std::cout << MSE_data[0] << " " << iter[0] << std::endl;
     //Plot mean square error
-    try {
-          Gnuplot g1("lines");
-          g1.reset_plot();
-          g1.set_grid();
 
-         g1.set_style("points").plot_xy(iter, MSE_data,"Mean Square Error");
-        }
-   catch (GnuplotException &ge)
-        {
-          std::cout << ge.what() << std::endl;
-        }
       return 0;
 }

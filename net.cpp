@@ -20,7 +20,7 @@ void Net::BackPropogate(std::vector<double>& desired_values)
   mean_square_error = 0.0;
   for (unsigned n = 0; n < output_layer.size(); n++) {
     double error = desired_values[n] - output_layer[n].GetOutputVal();
-    mean_square_error = 0.5*(error)*(error);
+    mean_square_error += 0.5*(error)*(error);
   }
 
   //Output Layer Gradients
