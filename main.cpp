@@ -70,6 +70,30 @@ void ShowVector(std::string label, std::vector<double> &v)
 }
 
 
+void StoreScaledData(std::vector<double> input_values, std::vector<double> desired_values, std::ofstream& input, std::ofstream& desired)
+{
+  for (int j = 0; j < input_values.size(); j++) {
+    if (j < (input_values.size() - 1)) {
+      input << input_values[j] << " ";
+    }
+    else{
+      input << input_values[j] << std::endl;
+    }
+  }
+
+  for (int j = 0; j < desired_values.size(); j++) {
+    if (j < (desired_values.size() - 1)) {
+      desired << desired_values[j] << " ";
+    }
+    else{
+      desired << desired_values[j] << std::endl;
+    }
+  }
+}
+
+
+////////////////MAIN/////////////////////
+
 int main(int argc, char const *argv[])
 {
   int epoch_count;
@@ -118,34 +142,14 @@ int main(int argc, char const *argv[])
         }
 
         // store input_values and desired_values in a file
-        for (int j = 0; j < input_values.size(); j++) {
-          if (j < (input_values.size() - 1)) {
-            input << input_values[j] << " ";
-          }
-          else{
-            input << input_values[j] << std::endl;
-          }
+        if(epoch == 0)
+        {
+          StoreScaledData(input_values, desired_values, input, desired);
         }
 
-        for (int j = 0; j < desired_values.size(); j++) {
-          if (j < (desired_values.size() - 1)) {
-            desired << desired_values[j] << " ";
-          }
-          else{
-            desired << desired_values[j] << std::endl;
-          }
-        }
-        
-        //ShowVector("Input is : ", input_values);
         n.ForwardPass(input_values);
-
         n.GetResults(result_values);
-        //ShowVector("Output is : ", result_values);
-
-        //ShowVector("Desired is : ", desired_values);
         n.BackPropogate(desired_values);
-        //std::cout << "Mean Square Error is : " << n.GetMeanSquareError() << std::endl;
-        //MSE << i + 1 + 312*epoch << " " << n.GetMeanSquareError() << std::endl;
         meansqtemp += n.GetMeanSquareError();
         input_values.clear();
         desired_values.clear();
@@ -154,7 +158,9 @@ int main(int argc, char const *argv[])
       MSE << epoch+1 << " " << meansqperepoch[epoch] << std::endl;
     }
     MSE.close();
-
+    input.close();
+    desired.close();
+    //delete p;
 //Plotting
     // Get MSE from file
     std::vector<double> MSE_data, iter;
