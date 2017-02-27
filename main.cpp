@@ -80,7 +80,7 @@ int main(int argc, char const *argv[])
     p.GetData();
     p.ScalingData();
   // For gnuplot_i
-    Gnuplot gp("lines");
+    //Gnuplot gp("lines");
 
     //Neural Net construction and Learning Params Inputs
     std::vector<int> topology_input;
@@ -91,7 +91,8 @@ int main(int argc, char const *argv[])
 
     //Windowing Dataset Creation
     std::ofstream MSE;
-    MSE.open("MSE.txt");
+    std::ofstream input, desired;
+    MSE.open("MSE.txt"); input.open("input.txt"); desired.open("desired.txt");
     std::vector<double> input_values;
     std::vector<double> desired_values;
     std::vector<double> result_values;
@@ -115,6 +116,26 @@ int main(int argc, char const *argv[])
         else
           desired_values.push_back(window_data_set[i][j]);
         }
+
+        // store input_values and desired_values in a file
+        for (int j = 0; j < input_values.size(); j++) {
+          if (j < (input_values.size() - 1)) {
+            input << input_values[j] << " ";
+          }
+          else{
+            input << input_values[j] << std::endl;
+          }
+        }
+
+        for (int j = 0; j < desired_values.size(); j++) {
+          if (j < (desired_values.size() - 1)) {
+            desired << desired_values[j] << " ";
+          }
+          else{
+            desired << desired_values[j] << std::endl;
+          }
+        }
+        
         //ShowVector("Input is : ", input_values);
         n.ForwardPass(input_values);
 
