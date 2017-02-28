@@ -99,8 +99,8 @@ int main(int argc, char const *argv[])
   int epoch_count;
 	//Data import
     Parser p;
-    p.file_name = "SN_YEARLY.txt";
-    p.data_size = 317;
+    p.file_name = "SN_MONTHLY.txt";
+    p.data_size = 3217;
     p.GetData();
     p.ScalingData();
   // For gnuplot_i

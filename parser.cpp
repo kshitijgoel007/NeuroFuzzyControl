@@ -49,9 +49,9 @@ void Parser::GetData()
     {
         std::istringstream iss(line);
         double a,b,c,d;
-        if(!(iss >> a >> b)) { break;}
+        if(!(iss >> a >> b >> c >> d)) { break;}
         sample_inputs_[i] = a;
-        sample_outputs_[i] = b;
+        sample_outputs_[i] = d;
         i = i + 1;
     }
     std::cout << "Dataset captured is : " << std::endl;
@@ -63,12 +63,12 @@ void Parser::ScalingData()
   //double mean = (std::accumulate(sample_outputs_.begin(), sample_outputs_.end(), 0.0))/sample_outputs_.size();
   //double sq_sum = std::inner_product(sample_outputs_.begin(), sample_outputs_.end(), sample_outputs_.begin(),0.0);
   //double std_dev = std::sqrt(sq_sum/(sample_outputs_.size() - mean*mean));
-  double mean = 79.3785;
-  double std_dev = 61.998;
+  double mean = 82.8509;
+  double std_dev = 67.8087;
   for (int i = 0; i < data_size; i++) {
     sample_outputs_[i] = (sample_outputs_[i] - mean)/std_dev;
-  sample_outputs_[i] = -1 + (sample_outputs_[i] - *std::min_element(sample_outputs_, sample_outputs_+ data_size))*2/
-                          (*std::max_element(sample_outputs_, sample_outputs_ + data_size) - *std::min_element(sample_outputs_, sample_outputs_+ data_size));
+  sample_outputs_[i] = -1 + ((sample_outputs_[i] - (-1.2218))*2/
+                          (4.6506 - (-1.2218)));
   }
   //PrintDataset();
   return;
