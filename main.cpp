@@ -83,10 +83,10 @@ void StoreScaledData(std::vector<double> input_values, std::vector<double> desir
 
   for (int j = 0; j < desired_values.size(); j++) {
     if (j < (desired_values.size() - 1)) {
-      desired << desired_values[j] << " ";
+      desired << j+1 << " " << desired_values[j] << " ";
     }
     else{
-      desired << desired_values[j] << std::endl;
+      desired << j+1 << " " << desired_values[j] << std::endl;
     }
   }
 }
@@ -115,8 +115,9 @@ int main(int argc, char const *argv[])
 
     //Windowing Dataset Creation
     std::ofstream MSE;
-    std::ofstream input, desired;
+    std::ofstream input, desired, results;
     MSE.open("MSE.txt"); input.open("input.txt"); desired.open("desired.txt");
+    results.open("results.txt");
     std::vector<double> input_values;
     std::vector<double> desired_values;
     std::vector<double> result_values;
@@ -154,9 +155,11 @@ int main(int argc, char const *argv[])
         input_values.clear();
         desired_values.clear();
       }
+      results << epoch + 1 << " " << result_values[0] << std::endl;
       meansqperepoch[epoch] = meansqtemp;
       MSE << epoch+1 << " " << meansqperepoch[epoch] << std::endl;
     }
+
     MSE.close();
     input.close();
     desired.close();
