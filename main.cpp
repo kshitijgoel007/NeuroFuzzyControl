@@ -115,8 +115,9 @@ int main(int argc, char const *argv[])
 
     //Windowing Dataset Creation
     std::ofstream MSE;
-    std::ofstream input, desired;
+    std::ofstream input, desired, results;
     MSE.open("MSE.txt"); input.open("input.txt"); desired.open("desired.txt");
+    results.open("results.txt");
     std::vector<double> input_values;
     std::vector<double> desired_values;
     std::vector<double> result_values;
@@ -130,15 +131,16 @@ int main(int argc, char const *argv[])
     for (int epoch = 0; epoch < epoch_count; epoch++)
     {
       meansqtemp = 0;
-      for (int i = 0; i < total_size; i++)
+      for (int i = 0; i < round(total_size*0.6); i++)
       {
         window_data_set[i] = new double[p.data_size - total_size];
-        for (int j = 0; j < p.data_size - total_size; j++) {
-        window_data_set[i][j] = p.sample_outputs_[i+j];
-        if(j < (p.data_size - total_size - topology_input.back()))
-          input_values.push_back(window_data_set[i][j]);
-        else
-          desired_values.push_back(window_data_set[i][j]);
+        for (int j = 0; j < p.data_size - total_size; j++)
+        {
+          window_data_set[i][j] = p.sample_outputs_[i+j];
+          if(j < (p.data_size - total_size - topology_input.back()))
+            input_values.push_back(window_data_set[i][j]);
+          else
+            desired_values.push_back(window_data_set[i][j]);
         }
 
         // store input_values and desired_values in a file
@@ -154,12 +156,14 @@ int main(int argc, char const *argv[])
         input_values.clear();
         desired_values.clear();
       }
+      results << result_values[0] << std::endl;
       meansqperepoch[epoch] = meansqtemp;
       MSE << epoch+1 << " " << meansqperepoch[epoch] << std::endl;
     }
     MSE.close();
     input.close();
     desired.close();
+    results.close();
     //delete p;
 //Plotting
     // Get MSE from file

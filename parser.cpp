@@ -48,7 +48,7 @@ void Parser::GetData()
     while(std::getline(infile, line))
     {
         std::istringstream iss(line);
-        double a,b,c,d;
+        double a,b;
         if(!(iss >> a >> b)) { break;}
         sample_inputs_[i] = a;
         sample_outputs_[i] = b;
@@ -67,8 +67,8 @@ void Parser::ScalingData()
   double std_dev = 61.998;
   for (int i = 0; i < data_size; i++) {
     sample_outputs_[i] = (sample_outputs_[i] - mean)/std_dev;
-  sample_outputs_[i] = -1 + (sample_outputs_[i] - *std::min_element(sample_outputs_, sample_outputs_+ data_size))*2/
-                          (*std::max_element(sample_outputs_, sample_outputs_ + data_size) - *std::min_element(sample_outputs_, sample_outputs_+ data_size));
+  sample_outputs_[i] = -1 + ((sample_outputs_[i] - (-1.2803))*2/
+                          (3.0633 - (-1.2803)));
   }
   //PrintDataset();
   return;
