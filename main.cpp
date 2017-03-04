@@ -114,26 +114,33 @@ int main(int argc, char const *argv[])
     //Topology Complete
 
     //Windowing Dataset Creation
-    std::ofstream MSE;
+    std::ofstream MSE, MSE_test;
     std::ofstream input, desired, results;
+    //Open the files
     MSE.open("MSE.txt"); input.open("input.txt"); desired.open("desired.txt");
-    results.open("results.txt");
+    MSE_test.open("MSE_test.txt");results.open("results.txt");
+
+    //Define vectors for neural net. Size will be defined automatically using the
+    //topology input from the user
     std::vector<double> input_values;
     std::vector<double> desired_values;
     std::vector<double> result_values;
     Net n(topology_input);
     int total_size = p.data_size - (topology_input.front() + topology_input.back());
     std::cout << total_size << " " << p.data_size - total_size << std::endl;
+
+    //Allocate memory for Windowing Dataset
     double** window_data_set = new double*[total_size];
 
+    //Aux variables for MSE
     double meansqtemp;
     double meansqperepoch[epoch_count];
+
     for (int epoch = 0; epoch < epoch_count; epoch++)
     {
-      meansqtemp = 0;
-
-      //////////////////////TRAINING////////////////////////
-      for (int i = 0; i < round(total_size*0.6); i++)
+      meansqtemp = 0.0;
+      //////////////////////ONLINE TRAINING////////////////////////
+      for (int i = 0; i < round(total_size*0.6); i++) // 60% is training set
       {
         window_data_set[i] = new double[p.data_size - total_size];
         for (int j = 0; j < p.data_size - total_size; j++)
@@ -145,45 +152,56 @@ int main(int argc, char const *argv[])
             desired_values.push_back(window_data_set[i][j]);
         }
 
-        // store input_values and desired_values in a file
-        if(epoch == 0)
-        {
-          StoreScaledData(input_values, desired_values, input, desired);
-        }
         if(epoch == epoch_count - 1)
         {
-          results << i+1 << " " << result_values[0] << std::endl;
+          StoreScaledData(input_values, desired_values, input, desired);
+          results << i + 1 << " " << result_values[0] << std::endl;
         }
-        n.ForwardPass(input_values);
+
+        // NN run
+        n.ForwardPass(input_values, desired_values);
         n.GetResults(result_values);
         n.BackPropogate(desired_values);
         meansqtemp += n.GetMeanSquareError();
         input_values.clear();
         desired_values.clear();
       }
-      meansqperepoch[epoch] = meansqtemp;
+      meansqperepoch[epoch] = meansqtemp/round(total_size*0.6);
       MSE << epoch+1 << " " << meansqperepoch[epoch] << std::endl;
+
+      meansqtemp = 0.0;
+      // Forward pass run on Test data, 40%
+      for (int i = round(total_size*0.6); i < total_size; i++)
+      {
+        window_data_set[i] = new double[p.data_size - total_size];
+        for (int j = 0; j < p.data_size - total_size; j++)
+        {
+          window_data_set[i][j] = p.sample_outputs_[i+j];
+          if(j < (p.data_size - total_size - topology_input.back()))
+            input_values.push_back(window_data_set[i][j]);
+          else
+            desired_values.push_back(window_data_set[i][j]);
+        }
+
+        // NN run
+        n.ForwardPass(input_values, desired_values);
+        n.GetResults(result_values);
+        meansqtemp += n.GetMeanSquareError();
+
+        if(epoch == epoch_count - 1)
+        {
+          StoreScaledData(input_values, desired_values, input, desired);
+          results << i - round(total_size*0.6) + 1 << " " << result_values[0] << std::endl;
+        }
+        input_values.clear();
+        desired_values.clear();
+      }
+      MSE_test << epoch+1 << " " << meansqtemp/(total_size - round(total_size*0.6)) << std::endl;
     }
     MSE.close();
+    MSE_test.close();
     input.close();
     desired.close();
     results.close();
-    //delete p;
-//Plotting
-    // Get MSE from file
-    std::vector<double> MSE_data, iter;
-    std::ifstream MSE_in("MSE.txt");
-    std::string line;
-
-    while(std::getline(MSE_in, line))
-    {
-        std::istringstream iss(line);
-        double a,b;
-        if(!(iss >> a >> b)) { break;}
-        MSE_data.push_back(b);
-        iter.push_back(a);
-    }
-    //Plot mean square error
-
-      return 0;
+    return 0;
 }

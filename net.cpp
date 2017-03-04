@@ -27,7 +27,7 @@ Net::Net(const std::vector<int>& topology)
   }
 }
 
-void Net::ForwardPass(std::vector<double>& input_values)
+void Net::ForwardPass(std::vector<double>& input_values, std::vector<double>& desired_values)
 {
   assert(input_values.size() == layer_net_[0].size());
   for (unsigned i = 0; i < input_values.size(); i++) {
@@ -41,6 +41,12 @@ void Net::ForwardPass(std::vector<double>& input_values)
       layer_net_[layerNum][n].FeedForward(prev_layer); // Maths inside Neuron happens here.
     }
   }
+  Layer& output_layer = layer_net_.back();
+  mean_square_error = 0.0;
+  for (unsigned n = 0; n < output_layer.size(); n++) {
+    double error = desired_values[n] - output_layer[n].GetOutputVal();
+    mean_square_error = 0.5*(error)*(error);
+  }
 }
 
 void Net::BackPropogate(std::vector<double>& desired_values)
@@ -49,7 +55,7 @@ void Net::BackPropogate(std::vector<double>& desired_values)
   mean_square_error = 0.0;
   for (unsigned n = 0; n < output_layer.size(); n++) {
     double error = desired_values[n] - output_layer[n].GetOutputVal();
-    mean_square_error += 0.5*(error)*(error);
+    mean_square_error = 0.5*(error)*(error);
   }
 
   //Output Layer Gradients

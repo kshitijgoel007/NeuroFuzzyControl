@@ -21,7 +21,7 @@ class Net
 {
 public:
     Net(const std::vector<int> &topology);
-    void ForwardPass(std::vector<double>& input_values);
+    void ForwardPass(std::vector<double>& input_values, std::vector<double>& desired_values);
     void BackPropogate(std::vector<double>& desired_values);
     void GetResults(std::vector<double>& result_values);
     double GetMeanSquareError(void){return mean_square_error;}

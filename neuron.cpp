@@ -14,7 +14,7 @@
 #include <cmath>
 
 double Neuron::eta = 0.15; //Learning Rate
-double Neuron::alpha = 0.3; //Momentum Factor
+double Neuron::alpha = 0.25; //Momentum Factor
 
 Neuron::Neuron(unsigned n_outputs, unsigned neural_index)
 {
