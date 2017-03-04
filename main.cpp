@@ -131,6 +131,8 @@ int main(int argc, char const *argv[])
     for (int epoch = 0; epoch < epoch_count; epoch++)
     {
       meansqtemp = 0;
+
+      //////////////////////TRAINING////////////////////////
       for (int i = 0; i < round(total_size*0.6); i++)
       {
         window_data_set[i] = new double[p.data_size - total_size];
@@ -148,7 +150,10 @@ int main(int argc, char const *argv[])
         {
           StoreScaledData(input_values, desired_values, input, desired);
         }
-
+        if(epoch == epoch_count - 1)
+        {
+          results << i+1 << " " << result_values[0] << std::endl;
+        }
         n.ForwardPass(input_values);
         n.GetResults(result_values);
         n.BackPropogate(desired_values);
@@ -156,7 +161,6 @@ int main(int argc, char const *argv[])
         input_values.clear();
         desired_values.clear();
       }
-      results << result_values[0] << std::endl;
       meansqperepoch[epoch] = meansqtemp;
       MSE << epoch+1 << " " << meansqperepoch[epoch] << std::endl;
     }

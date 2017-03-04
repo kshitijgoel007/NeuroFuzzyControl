@@ -2,6 +2,7 @@
 #include "parser.h"
 #include "net.h"
 #include "neuron.h"
+
 //Standard Includes
 #include <algorithm>
 #include <fstream>
@@ -13,6 +14,34 @@
 #include <cassert>
 #include <cmath>
 
+Net::Net(const std::vector<int>& topology)
+{
+  unsigned num_layers = topology.size();
+  for (int layerNum = 0; layerNum < num_layers; layerNum++) {
+    unsigned n_outputs = layerNum == topology.size() - 1 ? 0 : topology[layerNum + 1];
+    layer_net_.push_back(Layer()); // create a new empty layer
+
+    for (int neuron_num = 0; neuron_num < topology[layerNum]; neuron_num++) {
+      layer_net_.back().push_back(Neuron(n_outputs, neuron_num));
+    }
+  }
+}
+
+void Net::ForwardPass(std::vector<double>& input_values)
+{
+  assert(input_values.size() == layer_net_[0].size());
+  for (unsigned i = 0; i < input_values.size(); i++) {
+    layer_net_[0][i].SetOutputVal(input_values[i]);
+  }
+
+  //Forward Pass
+  for (unsigned layerNum = 1; layerNum < layer_net_.size(); layerNum++) {
+    for (unsigned n = 0; n < layer_net_[layerNum].size(); n++) {
+      Layer& prev_layer = layer_net_[layerNum - 1];
+      layer_net_[layerNum][n].FeedForward(prev_layer); // Maths inside Neuron happens here.
+    }
+  }
+}
 
 void Net::BackPropogate(std::vector<double>& desired_values)
 {
@@ -47,35 +76,6 @@ void Net::BackPropogate(std::vector<double>& desired_values)
     }
   }
   // Update all the weights
-}
-
-void Net::ForwardPass(std::vector<double>& input_values)
-{
-  assert(input_values.size() == layer_net_[0].size());
-  for (unsigned i = 0; i < input_values.size(); i++) {
-    layer_net_[0][i].SetOutputVal(input_values[i]);
-  }
-
-  //Forward Pass
-  for (unsigned layerNum = 1; layerNum < layer_net_.size(); layerNum++) {
-    for (unsigned n = 0; n < layer_net_[layerNum].size(); n++) {
-      Layer& prev_layer = layer_net_[layerNum - 1];
-      layer_net_[layerNum][n].FeedForward(prev_layer); // Maths inside Neuron happens here.
-    }
-  }
-}
-
-Net::Net(const std::vector<int>& topology)
-{
-  unsigned num_layers = topology.size();
-  for (int layerNum = 0; layerNum < num_layers; layerNum++) {
-    unsigned n_outputs = layerNum == topology.size() - 1 ? 0 : topology[layerNum + 1];
-    layer_net_.push_back(Layer()); // create a new empty layer
-
-    for (int neuron_num = 0; neuron_num < topology[layerNum]; neuron_num++) {
-      layer_net_.back().push_back(Neuron(n_outputs, neuron_num));
-    }
-  }
 }
 
 void Net::GetResults(std::vector<double>& result_values)

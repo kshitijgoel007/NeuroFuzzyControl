@@ -2,7 +2,6 @@
 #include "parser.h"
 #include "neuron.h"
 
-
 //Standard Includes
 #include <algorithm>
 #include <fstream>
@@ -15,7 +14,16 @@
 #include <cmath>
 
 double Neuron::eta = 0.15; //Learning Rate
-double Neuron::alpha = 0.1; //Momentum Factor
+double Neuron::alpha = 0.3; //Momentum Factor
+
+Neuron::Neuron(unsigned n_outputs, unsigned neural_index)
+{
+  for (unsigned c = 0; c < n_outputs; c++) {
+    neural_output_links_.push_back(Connection());
+    neural_output_links_.back().weight = RandomWeight();
+  }
+  n_index = neural_index;
+}
 
 double Neuron::SumNext(Layer& next_layer)
 {
@@ -52,14 +60,6 @@ void Neuron::FeedForward(Layer& prev_layer)
   neuron_output_ = Neuron::ActivationFunction(sum);
 }
 
-Neuron::Neuron(unsigned n_outputs, unsigned neural_index)
-{
-  for (unsigned c = 0; c < n_outputs; c++) {
-    neural_output_links_.push_back(Connection());
-    neural_output_links_.back().weight = RandomWeight();
-  }
-  n_index = neural_index;
-}
 void Neuron::UpdateInputWeights(Layer& prev_layer)
 {
     for (unsigned n = 0; n < prev_layer.size(); n++) {
