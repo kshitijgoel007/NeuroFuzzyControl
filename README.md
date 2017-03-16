@@ -20,7 +20,8 @@ Instructions:
 5. Finally, `./run.sh` in the parent directory.
 6. Input the net topology and number of epochs.
 7. The project should look like this finally on a linux system:
-`.
+```
+.
 ├── build
 │   ├── CMakeCache.txt
 │   ├── CMakeFiles
@@ -91,7 +92,7 @@ Instructions:
     ├── net.cpp
     ├── neuron.cpp
     └── parser.cpp
-`
+```
 
 ### Dynamic Neural Units based control of satellites.
 TODO:
