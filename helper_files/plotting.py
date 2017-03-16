@@ -2,10 +2,10 @@
 
 import pylab as pl
 import numpy as np
-f1 = open('MSE.txt', 'r')
-f2 = open('desired.txt', 'r')
-f3 = open('results.txt', 'r')
-f4 = open('MSE_test.txt', 'r')
+f1 = open('./output_data/MSE.txt', 'r')
+f2 = open('./output_data/desired.txt', 'r')
+f3 = open('./output_data/results.txt', 'r')
+f4 = open('./output_data/MSE_test.txt', 'r')
 
 mse = f1.read()
 des = f2.read()

@@ -99,7 +99,7 @@ int main(int argc, char const *argv[])
   int epoch_count;
 	//Data import
     Parser p;
-    p.file_name = "SN_YEARLY.txt";
+    p.file_name = "./Data/SN_YEARLY.txt";
     p.data_size = 317;
     p.GetData();
     p.ScalingData();
@@ -117,8 +117,8 @@ int main(int argc, char const *argv[])
     std::ofstream MSE, MSE_test;
     std::ofstream input, desired, results;
     //Open the files
-    MSE.open("MSE.txt"); input.open("input.txt"); desired.open("desired.txt");
-    MSE_test.open("MSE_test.txt");results.open("results.txt");
+    MSE.open("output_data/MSE.txt"); input.open("output_data/input.txt"); desired.open("output_data/desired.txt");
+    MSE_test.open("output_data/MSE_test.txt");results.open("output_data/results.txt");
 
     //Define vectors for neural net. Size will be defined automatically using the
     //topology input from the user

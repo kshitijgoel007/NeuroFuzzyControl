@@ -1,2 +1,2 @@
-./output
-./plotting.py
+./build/neuralNet
+./helper_files/plotting.py
