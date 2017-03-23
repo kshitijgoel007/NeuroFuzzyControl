@@ -94,8 +94,8 @@ Instructions:
     └── parser.cpp
 ```
 
-### Dynamic Neural Units based control of satellites.
+### Implementation of Dynamic Neural Units.
 TODO:
-- Real-time plotting using an appropriate plotting tool.
 - Recurrent Neural Net implentation.
-- Dynamic Neural Net implementation for Satellite Control.
+- Inverse Dynamic Neural Adaptive Control using the DNU-4 and DNU-5 on a discrete system.
+
