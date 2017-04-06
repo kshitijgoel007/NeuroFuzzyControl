@@ -11,15 +11,16 @@ class Parser
 public:
     std::string file_name;
     int data_size;
-    double* sample_inputs_;
-    double* sample_outputs_;
+    double** sample_inputs_;
+    double** sample_outputs_;
+    bool type_in_out_;
 
 	//Methods
 	public:
 		Parser(){}
     ~Parser();
     void Initialize();
-    void GetData();
+    void GetData(bool type_in_out_);
     void PrintDataset();
     void ScalingData();
 };

@@ -32,7 +32,7 @@ void Parser::PrintDataset()
     }
 }
 
-void Parser::GetData()
+void Parser::GetData(bool type_in_out_)
 {
     std::ifstream infile(file_name.c_str());
     std::cout << "Given file is : " << file_name.c_str() << std::endl;
